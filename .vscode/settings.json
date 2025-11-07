@@ -1,0 +1,19 @@
+{
+    "java.project.sourcePaths": [
+        "src"
+    ],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\javafx.web.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\javafx-swt.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\javafx.media.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\javafx.fxml.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\javafx.controls.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\jfx.incubator.input.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\javafx.swing.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\jdk.jsobject.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\javafx.graphics.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\jfx.incubator.richtext.jar",
+        "c:\\Users\\runip\\OneDrive\\Skrivebord\\javafx-sdk-25.0.1\\lib\\javafx.base.jar"
+    ]
+}
