@@ -28,6 +28,7 @@ public class Controller {
 
     // navigation methods used by subcontrollers
     public void showMainMenu() {
+        gameController.startGame();
         view.show(view.getMainMenuView().getRoot());
     }
 
@@ -41,6 +42,7 @@ public class Controller {
 
     public void showGame() {
         view.show(view.getGameview().getRoot());
+        gameController.startGame();
     }
 
     public void exitApplication() {

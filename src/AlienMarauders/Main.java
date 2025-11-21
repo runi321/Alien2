@@ -1,8 +1,6 @@
 package AlienMarauders;
 
-import AlienMarauders.Controller;
-import AlienMarauders.Model;
-import AlienMarauders.View;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 
