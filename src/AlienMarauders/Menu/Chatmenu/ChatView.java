@@ -3,10 +3,8 @@ package AlienMarauders.Menu.Chatmenu;
 import AlienMarauders.Model;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.*;
 
 public class ChatView {
 
@@ -15,28 +13,41 @@ public class ChatView {
     private final ListView<String> messagesList;
     private final ListView<String> usersList;
     private final TextField inputField;
-    private final Button sendButton;
-    private final Button mainMenuButton;
 
-    public ChatView(Model model) {
+    public ChatView(
+        ChatModel chatModel,
+        Model rootModel,
+        Runnable onSend,
+        Runnable onBack
+    ) {
         root = new BorderPane();
-        bindBackground(root, model);
 
-        // message list (center)
+        bindBackground(root, rootModel);
+
+        // messages list
         messagesList = new ListView<>();
-        messagesList.itemsProperty().bind(model.chatMessagesProperty());
+        messagesList.itemsProperty().bind(chatModel.messagesProperty());
         messagesList.setFocusTraversable(false);
 
-        // users (right)
+        // users list
         usersList = new ListView<>();
-        usersList.itemsProperty().bind(model.chatUsersProperty());
+        usersList.itemsProperty().bind(chatModel.usersProperty());
         usersList.setPrefWidth(180);
 
-        // bottom input area
+        // input + buttons
         inputField = new TextField();
         inputField.setPromptText("Type your message...");
-        sendButton = new Button("Send");
-        mainMenuButton = new Button("Main menu");
+
+        Button sendButton = new Button("Send");
+        Button mainMenuButton = new Button("Main menu");
+
+        sendButton.setOnAction(e -> onSend.run());
+        inputField.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                onSend.run();
+            }
+        });
+        mainMenuButton.setOnAction(e -> onBack.run());
 
         HBox bottom = new HBox(10, inputField, sendButton, mainMenuButton);
         bottom.setPadding(new Insets(10));
@@ -45,7 +56,7 @@ public class ChatView {
         Label chatLabel = new Label("Chat room");
         chatLabel.setStyle("-fx-font-size: 22px; -fx-text-fill: white;");
         VBox top = new VBox(10, chatLabel);
-        top.setPadding(new Insets(10, 10, 0, 10));
+        top.setPadding(new Insets(10));
 
         root.setTop(top);
         root.setCenter(messagesList);
@@ -53,34 +64,39 @@ public class ChatView {
         root.setBottom(bottom);
     }
 
-private void bindBackground(BorderPane node, Model model) {
-    Runnable apply = () -> {
-        String name = model.getBackgroundImage();                  // e.g. "space.png" / "ufo.png"
-        var url = getClass().getResource("/AlienMarauders/Myndir/" + name);
-        node.setStyle(url != null
-            ? "-fx-background-image: url('" + url.toExternalForm() + "'); -fx-background-size: cover;"
-            : "-fx-background-color: #111;");
-    };
-    model.backgroundImageProperty().addListener((o, a, b) -> apply.run());
-    apply.run();                                                  // initial background
-}
+    private void bindBackground(BorderPane node, Model rootModel) {
+        Runnable apply = () -> {
+            String name = rootModel.getBackgroundImage();
+            var url = getClass().getResource("/AlienMarauders/Myndir/" + name);
+            if (url != null) {
+                node.setStyle(
+                    "-fx-background-image: url('" + url.toExternalForm() + "');" +
+                    "-fx-background-size: cover;"
+                );
+            } else {
+                node.setStyle("-fx-background-color: #111;");
+            }
+        };
+        rootModel.backgroundImageProperty().addListener((obs, o, n) -> apply.run());
+        apply.run();
+    }
+
     public BorderPane getRoot() {
         return root;
     }
 
-    public TextField getInputField() {
-        return inputField;
+    // helpers for controller (no direct UI access)
+
+    public String consumeInputText() {
+        String text = inputField.getText();
+        inputField.clear();
+        return text;
     }
 
-    public Button getSendButton() {
-        return sendButton;
-    }
-
-    public Button getMainMenuButton() {
-        return mainMenuButton;
-    }
-
-    public ListView<String> getMessagesList() {
-        return messagesList;
+    public void scrollToBottom() {
+        int lastIndex = messagesList.getItems().size() - 1;
+        if (lastIndex >= 0) {
+            messagesList.scrollTo(lastIndex);
+        }
     }
 }

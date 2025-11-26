@@ -13,16 +13,16 @@ import AlienMarauders.Game.movement.NoMovementStrategy;
 import AlienMarauders.Game.movement.MoveDownStrategy;
 import AlienMarauders.Game.movement.ZigZagMovementStrategy;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.*;
+import javafx.scene.layout.Region;
 
 public class GameController {
 
     private final Model model;
     private final Gameview view;
     private final Controller rootController;
+    private boolean gameOver = false;
 
     // Game state
     private Player player;
@@ -40,18 +40,31 @@ public class GameController {
     private AnimationTimer gameLoop;
     private boolean firstFrame = true;
 
-    public GameController(Model model, Gameview view, Controller rootController) {
+    public GameController(Model model, Controller rootController) {
         this.model = model;
-        this.view = view;
         this.rootController = rootController;
+        this.view = new Gameview(model); 
 
         setupGame();
         attachHandlers();
     }
 
+
+
+    public Region getView() {
+    return view.getRoot();   // Gameview must have getRoot()
+}
     /* ---------------------- setup ---------------------- */
 
     private void setupGame() {
+
+        gameOver = false; 
+
+        enemies.clear();
+        shots.clear();
+        score.resetScore();
+        speedMultiplier = 1.0;
+
         // Create player
         Image playerImage = new Image(
                 getClass().getResource("/AlienMarauders/Myndir/player.png").toExternalForm());
@@ -104,7 +117,7 @@ public class GameController {
 
                 CollisionResult r;
                 try {
-                    r = future.get(); // wait for worker (still counts as concurrency)
+                    r = future.get(); // wait for worker (concurrency)
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                     stopGame();
@@ -114,9 +127,8 @@ public class GameController {
 
                 // 3) Apply collision result on FX thread
                 if (r.playerHit || r.enemyAtBottom) {
+                    gameOver = true;
                     stopGame();
-                    rootController.showMainMenu();
-                    return;
                 }
 
                 // kill enemies and shots hit by bullets
@@ -152,9 +164,11 @@ public class GameController {
                 for (Enemy e : enemies) e.render(gc);
                 for (PlayerShot s : shots) s.render(gc);
                 score.render(gc);
+
+                if (gameOver) gc.fillText("GAME OVER", 280, 300);
             }
 
-            // --- runs in worker thread, no JavaFX calls here
+            // runs in worker thread, no JavaFX calls here
             private CollisionResult doCollisionChecks() {
                 CollisionResult r = new CollisionResult();
 
@@ -189,16 +203,6 @@ public class GameController {
         };
     }
 
-    /* --------- small helper type returned by worker ---------- */
-
-    private static class CollisionResult {
-        boolean playerHit;
-        boolean enemyAtBottom;
-        int scoreDelta;
-        Set<Integer> enemyIndicesToKill = new HashSet<>();
-        Set<Integer> shotIndicesToKill = new HashSet<>();
-    }
-
     /* ----------------- enemies & strategy ----------------- */
 
     private void spawnEnemies() {
@@ -207,7 +211,7 @@ public class GameController {
         Image enemySheet = new Image(
                 getClass().getResource("/AlienMarauders/Myndir/greenmonster.png").toExternalForm());
 
-        // Very simple "row" formation
+        // simple "row" formation
         int cols = 6;
         double startX = 60;
         double spacingX = 80;
@@ -276,10 +280,15 @@ public class GameController {
     /* ----------------- lifecycle ----------------- */
 
     public void startGame() {
+        stopGame();
+
+        setupGame();
+        
         firstFrame = true;
         gameLoop.start();
         view.getCanvas().requestFocus();
     }
+
 
     public void stopGame() {
         if (gameLoop != null) {
@@ -287,7 +296,7 @@ public class GameController {
         }
     }
 
-    // Optional: call when app closes to clean up the thread
+    // call when app closes to clean up the thread (not used yet)
     public void shutdownExecutor() {
         executor.shutdownNow();
     }

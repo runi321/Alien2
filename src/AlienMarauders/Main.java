@@ -6,21 +6,21 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    @Override
-    public void start(Stage primaryStage) {
-        Model model = new Model();
-        View view = new View(model);
-        Controller controller = new Controller(model, view);
+@Override
+public void start(Stage primaryStage) {
+    Model model = new Model();
+    View view = new View();
+    Controller controller = new Controller(model, view);
 
-        primaryStage.setTitle("Alien Marauders");
-        primaryStage.setScene(view.getScene());
-        primaryStage.show();
-        System.out.println(getClass().getResource("/AlienMarauders/Myndir/space.png"));
+    primaryStage.setTitle("Alien Marauders");
+    primaryStage.setScene(view.getScene());
+    primaryStage.show();
 
-        controller.showMainMenu();
-    }
+    controller.showMainMenu();
+}
 
     public static void main(String[] args) {
-        launch(args);
-    }
+    launch(args);
+
+}
 }

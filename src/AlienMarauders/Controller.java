@@ -19,29 +19,26 @@ public class Controller {
         this.model = model;
         this.view = view;
 
-        // create subcontrollers and hand them "this" so they can navigate
-        mainMenuController = new MainMenuController(model, view.getMainMenuView(), this);
-        settingsController = new SettingsController(model, view.getSettingsView(), this);
-        chatController = new ChatController(model, view.getChatView(), this);
-        gameController = new GameController(model, view.getGameview(), this);
+        mainMenuController = new MainMenuController(model, this);
+        settingsController = new SettingsController(model, this);
+        chatController     = new ChatController(model, this);
+        gameController     = new GameController(model, this); 
     }
 
-    // navigation methods used by subcontrollers
     public void showMainMenu() {
-        gameController.startGame();
-        view.show(view.getMainMenuView().getRoot());
+        view.show(mainMenuController.getView());
     }
 
     public void showSettings() {
-        view.show(view.getSettingsView().getRoot());
+        view.show(settingsController.getView());
     }
 
     public void showChat() {
-        view.show(view.getChatView().getRoot());
+        view.show(chatController.getView());
     }
 
     public void showGame() {
-        view.show(view.getGameview().getRoot());
+        view.show(gameController.getView());
         gameController.startGame();
     }
 

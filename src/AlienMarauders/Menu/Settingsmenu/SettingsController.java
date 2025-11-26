@@ -2,45 +2,30 @@ package AlienMarauders.Menu.Settingsmenu;
 
 import AlienMarauders.Controller;
 import AlienMarauders.Model;
+import javafx.scene.layout.Region;
 
 public class SettingsController {
 
-    private final Model model;
+    private final SettingsModel model;
     private final SettingsView view;
     private final Controller rootController;
 
-    public SettingsController(Model model, SettingsView view, Controller rootController) {
-        this.model = model;
-        this.view = view;
+    public SettingsController(Model rootModel, Controller rootController) {
+        this.model = new SettingsModel(rootModel);
         this.rootController = rootController;
 
-        attachHandlers();
+        this.view = new SettingsView(
+            this.model,
+            () -> this.model.setBackgroundImage("space.png"),
+            () -> this.model.setBackgroundImage("ufo.png"),
+            () -> this.model.setDifficulty(Model.Difficulty.EASY),
+            () -> this.model.setDifficulty(Model.Difficulty.MEDIUM),
+            () -> this.model.setDifficulty(Model.Difficulty.HARD),
+            rootController::showMainMenu
+        );
     }
 
-    private void attachHandlers() {
-        // background
-        view.getBackgroundSpace().setOnAction(e ->
-                model.setBackgroundImage("space.png")
-        );
-        view.getBackgroundUfo().setOnAction(e ->
-                model.setBackgroundImage("ufo.png")
-        );
-
-
-        
-
-        // difficulty
-        view.getDifficultyEasy().setOnAction(e ->
-                model.setDifficulty(Model.Difficulty.EASY)
-        );
-        view.getDifficultyMedium().setOnAction(e ->
-                model.setDifficulty(Model.Difficulty.MEDIUM)
-        );
-        view.getDifficultyHard().setOnAction(e ->
-                model.setDifficulty(Model.Difficulty.HARD)
-        );
-
-        // back
-        view.getBackBtn().setOnAction(e -> rootController.showMainMenu());
+    public Region getView() {
+        return view.getRoot();
     }
 }

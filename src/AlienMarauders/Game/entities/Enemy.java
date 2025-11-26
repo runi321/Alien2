@@ -8,7 +8,7 @@ import javafx.scene.image.WritableImage;
 
 public class Enemy extends Entity {
 
-    // The asset greenmonster.png contains two images (numImages = 2),
+    
     // this is used for animation purposes.
     private Image[] images;
     private int numImages;
@@ -17,7 +17,7 @@ public class Enemy extends Entity {
     private double posX0;
     private double posY0;
 
-    // Find appropriate hp and speed-feel free to use these values
+    // Find appropriate hp and speed
     private int hitPoints = 3;
     private double speed = 0.035;
 
@@ -35,8 +35,6 @@ public class Enemy extends Entity {
 
     @Override
     public void move(double timeMillis) {
-        // for now simple "move down" –
-        // later this will call a MovementStrategy
         double ny = posY + speed * timeMillis;
         moveTo(posX, ny);
     }

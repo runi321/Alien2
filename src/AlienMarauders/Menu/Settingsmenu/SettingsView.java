@@ -10,92 +10,93 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
 
 public class SettingsView {
 
     private final BorderPane root;
-    private final MenuItem backgroundSpace;
-    private final MenuItem backgroundUfo;
 
-    private final MenuItem difficultyEasy;
-    private final MenuItem difficultyMedium;
-    private final MenuItem difficultyHard;
-
-    private final Button backBtn;
-
-    public SettingsView(Model model) {
+    public SettingsView(
+        SettingsModel model,
+        Runnable onBackgroundSpace,
+        Runnable onBackgroundUfo,
+        Runnable onDifficultyEasy,
+        Runnable onDifficultyMedium,
+        Runnable onDifficultyHard,
+        Runnable onBack
+    ) {
         root = new BorderPane();
+
+        // background binding
         bindBackground(root, model);
 
+        // UI header
         Label header = new Label("Settings");
         header.setStyle("-fx-font-size: 28px; -fx-text-fill: white;");
 
-        // menus
+        // Background menu
         Menu backgroundMenu = new Menu("Background");
-        backgroundSpace = new MenuItem("Space");
-        backgroundUfo = new MenuItem("UFO");
-        backgroundMenu.getItems().addAll(backgroundSpace, backgroundUfo);
+        MenuItem space = new MenuItem("Space");
+        MenuItem ufo   = new MenuItem("UFO");
 
+        // UI element wires to logic
+        space.setOnAction(e -> onBackgroundSpace.run());
+        ufo.setOnAction(e -> onBackgroundUfo.run());
+
+        backgroundMenu.getItems().addAll(space, ufo);
+
+        // Difficulty menu
         Menu difficultyMenu = new Menu("Difficulty");
-        difficultyEasy = new MenuItem("Easy");
-        difficultyMedium = new MenuItem("Medium");
-        difficultyHard = new MenuItem("Hard");
-        difficultyMenu.getItems().addAll(difficultyEasy, difficultyMedium, difficultyHard);
+        MenuItem easy   = new MenuItem("Easy");
+        MenuItem medium = new MenuItem("Medium");
+        MenuItem hard   = new MenuItem("Hard");
 
+        // attach Runnables
+        easy.setOnAction(e -> onDifficultyEasy.run());
+        medium.setOnAction(e -> onDifficultyMedium.run());
+        hard.setOnAction(e -> onDifficultyHard.run());
+
+        difficultyMenu.getItems().addAll(easy, medium, hard);
+
+        // Menu bar
         MenuBar bar = new MenuBar(backgroundMenu, difficultyMenu);
 
+        // Top layout
         VBox topBox = new VBox(10, header, bar);
         topBox.setPadding(new Insets(20));
         topBox.setAlignment(Pos.CENTER_LEFT);
 
-        backBtn = new Button("Back to main menu");
-        backBtn.setPadding(new Insets(10, 20, 10, 20));
+        // Back button
+        Button backBtn = new Button("Back");
+        backBtn.setOnAction(e -> onBack.run());
 
         VBox bottomBox = new VBox(backBtn);
         bottomBox.setPadding(new Insets(20));
         bottomBox.setAlignment(Pos.CENTER_LEFT);
 
+        // assign to layout
         root.setTop(topBox);
         root.setBottom(bottomBox);
     }
 
-private void bindBackground(BorderPane node, Model model) {
-    Runnable apply = () -> {
-        String name = model.getBackgroundImage();                  // e.g. "space.png" / "ufo.png"
-        var url = getClass().getResource("/AlienMarauders/Myndir/" + name);
-        node.setStyle(url != null
-            ? "-fx-background-image: url('" + url.toExternalForm() + "'); -fx-background-size: cover;"
-            : "-fx-background-color: #111;");
-    };
-    model.backgroundImageProperty().addListener((o, a, b) -> apply.run());
-    apply.run();                                                  // initial background
-}
+    private void bindBackground(BorderPane node, SettingsModel model) {
+        Runnable apply = () -> {
+            String name = model.getBackgroundImage();
+            var url = getClass().getResource("/AlienMarauders/Myndir/" + name);
+            if (url != null) {
+                node.setStyle(
+                    "-fx-background-image: url('" + url.toExternalForm() + "');" +
+                    "-fx-background-size: cover;"
+                );
+            } else {
+                node.setStyle("-fx-background-color: #111;");
+            }
+        };
+        model.backgroundImageProperty().addListener((obs, oldV, newV) -> apply.run());
+        apply.run();
+    }
 
-    public BorderPane getRoot() {
+    public Region getRoot() {
         return root;
-    }
-
-    public MenuItem getBackgroundSpace() {
-        return backgroundSpace;
-    }
-
-    public MenuItem getBackgroundUfo() {
-        return backgroundUfo;
-    }
-
-    public MenuItem getDifficultyEasy() {
-        return difficultyEasy;
-    }
-
-    public MenuItem getDifficultyMedium() {
-        return difficultyMedium;
-    }
-
-    public MenuItem getDifficultyHard() {
-        return difficultyHard;
-    }
-
-    public Button getBackBtn() {
-        return backBtn;
     }
 }

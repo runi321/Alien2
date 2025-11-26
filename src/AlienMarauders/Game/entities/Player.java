@@ -9,7 +9,7 @@ public class Player extends Entity {
     private double velocityX;
     private double velocityY;
 
-    private double speed = 0.4; // tweak to taste
+    private double speed = 0.4; // change if needed
 
     private double moveLeft  = 0;
     private double moveRight = 0;

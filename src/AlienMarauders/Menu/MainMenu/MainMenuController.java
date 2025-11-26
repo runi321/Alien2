@@ -2,25 +2,28 @@ package AlienMarauders.Menu.MainMenu;
 
 import AlienMarauders.Controller;
 import AlienMarauders.Model;
+import javafx.scene.layout.Region;
 
 public class MainMenuController {
 
-    private final Model model;
+    private final MainMenuModel model;
     private final MainMenuView view;
     private final Controller rootController;
 
-    public MainMenuController(Model model, MainMenuView view, Controller rootController) {
-        this.model = model;
-        this.view = view;
+    public MainMenuController(Model rootModel, Controller rootController) {
+        this.model = new MainMenuModel(rootModel);
         this.rootController = rootController;
 
-        attachHandlers();
+        this.view = new MainMenuView(
+            this.model,
+            () -> rootController.showGame(),        // Start game
+            () -> rootController.showChat(),        // Chat
+            () -> rootController.showSettings(),    // Settings
+            rootController::exitApplication         // Exit
+        );
     }
 
-    private void attachHandlers() {
-        view.getStartBtn().setOnAction(e -> rootController.showGame());
-        view.getChatBtn().setOnAction(e -> rootController.showChat());
-        view.getSettingsBtn().setOnAction(e -> rootController.showSettings());
-        view.getExitBtn().setOnAction(e -> rootController.exitApplication());
+    public Region getView() {
+        return view.getRoot();
     }
 }
